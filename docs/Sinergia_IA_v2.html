@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sinergia IA · Portal Maestro de Prompting Educativo</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<style>
+:root {
+  --primary: #0a0f1e;
+  --secondary: #1a2744;
+  --accent: #3b82f6;
+  --accent2: #f59e0b;
+  --accent3: #10b981;
+  --accent4: #8b5cf6;
+  --surface: #f0f4ff;
+  --card: #ffffff;
+  --text: #1e293b;
+  --muted: #64748b;
+  --border: #e2e8f0;
+  --code-bg: #0f172a;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',system-ui,sans-serif;background:var(--surface);color:var(--text);line-height:1.6;overflow-x:hidden}
+
+/* ── NAV ── */
+nav{position:sticky;top:0;z-index:100;background:rgba(10,15,30,0.95);backdrop-filter:blur(12px);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:62px;border-bottom:1px solid rgba(255,255,255,0.06)}
+.nav-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.15rem;color:#fff;letter-spacing:-0.02em}
+.nav-logo span{color:var(--accent2)}
+.nav-links{display:flex;gap:0.25rem}
+.nav-links a{color:rgba(255,255,255,0.6);text-decoration:none;font-size:0.85rem;padding:6px 14px;border-radius:6px;transition:all 0.2s}
+.nav-links a:hover{color:#fff;background:rgba(255,255,255,0.08)}
+.nav-cta{background:var(--accent);color:#fff;padding:7px 18px;border-radius:8px;font-size:0.85rem;font-weight:500;text-decoration:none;transition:all 0.2s}
+.nav-cta:hover{background:#2563eb;transform:translateY(-1px)}
+
+/* ── HERO ── */
+header{background:var(--primary);padding:6rem 2rem 8rem;text-align:center;position:relative;overflow:hidden}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(59,130,246,0.07) 1px,transparent 1px),linear-gradient(90deg,rgba(59,130,246,0.07) 1px,transparent 1px);background-size:50px 50px;mask-image:radial-gradient(ellipse at center,black 30%,transparent 75%)}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(59,130,246,0.12);border:1px solid rgba(59,130,246,0.3);color:#93c5fd;padding:6px 16px;border-radius:100px;font-size:0.78rem;font-weight:500;margin-bottom:1.5rem;letter-spacing:0.04em}
+.hero-badge::before{content:'';width:6px;height:6px;background:#3b82f6;border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(1.4)}}
+header h1{font-family:'Syne',sans-serif;font-size:clamp(2.2rem,5vw,3.8rem);font-weight:800;color:#fff;line-height:1.15;letter-spacing:-0.03em;position:relative;margin-bottom:1rem}
+header h1 em{font-style:normal;color:var(--accent2)}
+header p{color:rgba(255,255,255,0.5);max-width:560px;margin:0 auto 2rem;font-size:1.05rem;font-weight:300}
+.hero-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;position:relative}
+.btn-primary{background:var(--accent);color:#fff;padding:12px 28px;border-radius:10px;text-decoration:none;font-weight:500;font-size:0.95rem;transition:all 0.2s;border:none;cursor:pointer}
+.btn-primary:hover{background:#2563eb;transform:translateY(-2px);box-shadow:0 8px 24px rgba(59,130,246,0.35)}
+.btn-ghost{background:transparent;color:rgba(255,255,255,0.7);padding:12px 28px;border-radius:10px;text-decoration:none;font-weight:500;font-size:0.95rem;border:1px solid rgba(255,255,255,0.15);cursor:pointer;transition:all 0.2s}
+.btn-ghost:hover{border-color:rgba(255,255,255,0.4);color:#fff}
+
+/* ── LAYOUT ── */
+.container{max-width:1120px;margin:0 auto;padding:0 1.5rem}
+section{padding:4rem 0}
+.section-label{display:inline-flex;align-items:center;gap:8px;font-size:0.75rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent);margin-bottom:0.75rem}
+.section-title{font-family:'Syne',sans-serif;font-size:clamp(1.6rem,3vw,2.2rem);font-weight:700;color:var(--text);letter-spacing:-0.02em;margin-bottom:0.75rem}
+.section-sub{color:var(--muted);max-width:560px;font-size:0.95rem}
+
+/* ── PILARS ── */
+.pilar-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:2rem}
+.pilar-item{background:var(--card);border:1px solid var(--border);padding:1.5rem 1rem;border-radius:14px;text-align:center;transition:all 0.25s;cursor:default}
+.pilar-item:hover{border-color:var(--accent);transform:translateY(-4px);box-shadow:0 12px 28px rgba(59,130,246,0.1)}
+.pilar-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:1.3rem}
+.pilar-item strong{font-size:0.9rem;font-weight:500;display:block;margin-bottom:4px}
+.pilar-item small{color:var(--muted);font-size:0.78rem}
+
+/* ── BUILDER ── */
+.builder-wrap{background:var(--code-bg);border-radius:20px;padding:2rem;border:1px solid rgba(255,255,255,0.06)}
+.builder-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
+@media(max-width:700px){.builder-grid{grid-template-columns:1fr}}
+.field-group label{display:block;color:rgba(255,255,255,0.5);font-size:0.75rem;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:6px}
+.builder-input{width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:#fff;padding:10px 14px;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:0.9rem;transition:all 0.2s}
+.builder-input:focus{outline:none;border-color:var(--accent);background:rgba(59,130,246,0.08)}
+.builder-input::placeholder{color:rgba(255,255,255,0.2)}
+.preview-box{grid-column:1/-1;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-left:3px solid var(--accent2);border-radius:10px;padding:1.25rem;font-family:'Courier New',monospace;font-size:0.85rem;color:#e2e8f0;line-height:1.7;min-height:90px;white-space:pre-wrap;word-break:break-word}
+.builder-actions{display:flex;gap:10px;margin-top:1rem;flex-wrap:wrap}
+.btn-copy{background:var(--accent2);color:var(--primary);padding:9px 20px;border-radius:8px;border:none;font-weight:600;font-size:0.85rem;cursor:pointer;transition:all 0.2s}
+.btn-copy:hover{background:#d97706;transform:translateY(-1px)}
+.btn-send{background:var(--accent4);color:#fff;padding:9px 20px;border-radius:8px;border:none;font-weight:500;font-size:0.85rem;cursor:pointer;transition:all 0.2s}
+.btn-send:hover{background:#7c3aed}
+
+/* ── TABS ── */
+.tab-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1.25rem}
+.tab-btn{padding:8px 20px;border-radius:8px;border:1.5px solid var(--border);background:transparent;color:var(--muted);font-size:0.85rem;font-weight:500;cursor:pointer;transition:all 0.2s;font-family:'DM Sans',sans-serif}
+.tab-btn.active{border-color:var(--accent);background:var(--accent);color:#fff}
+.tab-btn:hover:not(.active){border-color:var(--accent);color:var(--accent)}
+.tab-content{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.5rem}
+
+/* ── GALLERY ── */
+.gallery-filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1.5rem}
+.filter-btn{padding:6px 16px;border-radius:100px;border:1.5px solid var(--border);background:transparent;color:var(--muted);font-size:0.82rem;font-weight:500;cursor:pointer;transition:all 0.2s;font-family:'DM Sans',sans-serif}
+.filter-btn.active,
+.filter-btn:hover{border-color:var(--accent);color:var(--accent);background:rgba(59,130,246,0.06)}
+.prompt-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+.prompt-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.25rem;transition:all 0.25s;cursor:pointer;position:relative;overflow:hidden}
+.prompt-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:16px 16px 0 0}
+.prompt-card.cat-feedback::before{background:linear-gradient(90deg,#3b82f6,#8b5cf6)}
+.prompt-card.cat-planning::before{background:linear-gradient(90deg,#10b981,#3b82f6)}
+.prompt-card.cat-evaluation::before{background:linear-gradient(90deg,#f59e0b,#ef4444)}
+.prompt-card.cat-creativity::before{background:linear-gradient(90deg,#8b5cf6,#ec4899)}
+.prompt-card.cat-research::before{background:linear-gradient(90deg,#06b6d4,#10b981)}
+.prompt-card.cat-inclusion::before{background:linear-gradient(90deg,#f59e0b,#10b981)}
+.prompt-card:hover{border-color:var(--accent);transform:translateY(-3px);box-shadow:0 12px 32px rgba(0,0,0,0.08)}
+.pc-header{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px}
+.pc-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:100px;font-size:0.7rem;font-weight:500;letter-spacing:0.03em}
+.pc-badge.b-feedback{background:#eff6ff;color:#1d4ed8}
+.pc-badge.b-planning{background:#ecfdf5;color:#065f46}
+.pc-badge.b-evaluation{background:#fffbeb;color:#92400e}
+.pc-badge.b-creativity{background:#f5f3ff;color:#5b21b6}
+.pc-badge.b-research{background:#ecfeff;color:#155e75}
+.pc-badge.b-inclusion{background:#f0fdf4;color:#14532d}
+.pc-copy{background:none;border:none;color:var(--muted);cursor:pointer;padding:4px 8px;border-radius:6px;font-size:0.75rem;transition:all 0.2s}
+.pc-copy:hover{background:var(--surface);color:var(--accent)}
+.pc-title{font-weight:500;font-size:0.93rem;color:var(--text);margin-bottom:8px}
+.pc-text{font-size:0.83rem;color:var(--muted);line-height:1.6;font-style:italic;background:var(--surface);padding:10px 12px;border-radius:8px;border-left:2px solid var(--border)}
+.pc-footer{display:flex;align-items:center;justify-content:space-between;margin-top:10px}
+.pc-tags{display:flex;gap:5px;flex-wrap:wrap}
+.pc-tag{background:var(--surface);color:var(--muted);padding:2px 8px;border-radius:4px;font-size:0.7rem}
+.pc-level{font-size:0.7rem;color:var(--muted)}
+.prompt-card.hidden{display:none}
+
+/* ── ASSISTANT ── */
+#asistente{background:var(--primary);border-radius:24px;padding:2.5rem;border:1px solid rgba(255,255,255,0.06);overflow:hidden;position:relative}
+#asistente::after{content:'✦';position:absolute;right:2rem;top:2rem;font-size:4rem;color:rgba(59,130,246,0.05);pointer-events:none}
+.chat-window{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:14px;height:340px;overflow-y:auto;padding:1rem;display:flex;flex-direction:column;gap:12px;margin:1.25rem 0;scroll-behavior:smooth}
+.msg{display:flex;gap:10px;align-items:flex-start;animation:fadeUp 0.3s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.msg-avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.8rem;flex-shrink:0}
+.msg-avatar.ai{background:rgba(59,130,246,0.2);color:#93c5fd;border:1px solid rgba(59,130,246,0.3)}
+.msg-avatar.user{background:rgba(245,158,11,0.2);color:#fcd34d;border:1px solid rgba(245,158,11,0.3)}
+.msg-bubble{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.06);padding:10px 14px;border-radius:10px;font-size:0.85rem;color:rgba(255,255,255,0.85);line-height:1.6;max-width:85%}
+.msg.user-msg{flex-direction:row-reverse}
+.msg.user-msg .msg-bubble{background:rgba(59,130,246,0.12);border-color:rgba(59,130,246,0.2);color:#bfdbfe}
+.chat-input-row{display:flex;gap:10px}
+.chat-input{flex:1;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:#fff;padding:11px 16px;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.9rem}
+.chat-input:focus{outline:none;border-color:var(--accent);background:rgba(59,130,246,0.08)}
+.chat-input::placeholder{color:rgba(255,255,255,0.25)}
+.chat-send{background:var(--accent);color:#fff;border:none;padding:11px 20px;border-radius:10px;cursor:pointer;font-size:0.9rem;transition:all 0.2s}
+.chat-send:hover{background:#2563eb}
+.chat-send:disabled{opacity:0.4;cursor:not-allowed}
+.quick-chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:0.75rem}
+.chip{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.6);padding:5px 14px;border-radius:100px;font-size:0.78rem;cursor:pointer;transition:all 0.2s}
+.chip:hover{border-color:var(--accent);color:#93c5fd;background:rgba(59,130,246,0.1)}
+.typing-dot{display:inline-flex;gap:4px;padding:4px 0}
+.typing-dot span{width:6px;height:6px;background:rgba(59,130,246,0.5);border-radius:50%;animation:bounce 1.2s infinite}
+.typing-dot span:nth-child(2){animation-delay:0.2s}
+.typing-dot span:nth-child(3){animation-delay:0.4s}
+@keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-6px)}}
+
+/* ── ALERTS ── */
+.alert{display:flex;gap:12px;padding:14px 16px;border-radius:10px;align-items:flex-start;font-size:0.88rem;margin:12px 0}
+.alert-tip{background:#f0fdf4;border:1px solid #a7f3d0;color:#065f46}
+.alert-warn{background:#fffbeb;border:1px solid #fde68a;color:#92400e}
+.alert-info{background:#eff6ff;border:1px solid #bfdbfe;color:#1e40af}
+.alert i{margin-top:2px;flex-shrink:0}
+
+/* ── CHECKLIST ── */
+.checklist{list-style:none;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px;margin-top:1rem}
+.checklist li{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--border);padding:10px 14px;border-radius:9px;font-size:0.85rem;color:var(--text)}
+.checklist li i{color:var(--accent3);font-size:0.9rem}
+.checklist li.bad i{color:#ef4444}
+
+/* ── STATS ── */
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin:2rem 0}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.25rem;text-align:center}
+.stat-num{font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;color:var(--accent);display:block}
+.stat-label{font-size:0.78rem;color:var(--muted);margin-top:4px}
+
+/* ── FOOTER ── */
+footer{background:var(--primary);color:rgba(255,255,255,0.4);padding:3rem 1.5rem;text-align:center;font-size:0.85rem}
+footer strong{color:rgba(255,255,255,0.7)}
+
+/* ── SCROLL FX ── */
+.fade-in{opacity:0;transform:translateY(20px);transition:opacity 0.5s ease,transform 0.5s ease}
+.fade-in.visible{opacity:1;transform:translateY(0)}
+
+/* ── RESPONSIVE ── */
+@media(max-width:600px){
+  nav .nav-links{display:none}
+  header{padding:4rem 1.5rem 6rem}
+  .prompt-grid{grid-template-columns:1fr}
+  .builder-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Sinergia <span>IA</span></div>
+  <div class="nav-links">
+    <a href="#arquitectura">Arquitectura</a>
+    <a href="#constructor">Constructor</a>
+    <a href="#galeria">Galería</a>
+    <a href="#asistente-sec">Asistente</a>
+  </div>
+  <a class="nav-cta" href="#asistente-sec">Probar Asistente</a>
+</nav>
+
+<!-- HERO -->
+<header>
+  <div class="hero-grid"></div>
+  <div class="hero-badge"><i class="fas fa-sparkles"></i> Catálogo BIU · Edición 2025</div>
+  <h1>Prompting Educativo<br>de <em>Élite</em> con IA</h1>
+  <p>Del Catálogo BIU 2024 al aula real. Construye, aprende y domina la ingeniería de prompts para transformar tu práctica docente.</p>
+  <div class="hero-btns">
+    <a class="btn-primary" href="#constructor">Construir Prompt</a>
+    <a class="btn-ghost" href="#galeria">Ver Galería</a>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- STATS -->
+  <div class="stats-row fade-in">
+    <div class="stat-card"><span class="stat-num">5</span><div class="stat-label">Pilares del Prompt Maestro</div></div>
+    <div class="stat-card"><span class="stat-num">18</span><div class="stat-label">Prompts en la Galería</div></div>
+    <div class="stat-card"><span class="stat-num">6</span><div class="stat-label">Categorías Docentes</div></div>
+    <div class="stat-card"><span class="stat-num">∞</span><div class="stat-label">Posibilidades en el Aula</div></div>
+  </div>
+
+  <!-- ARQUITECTURA -->
+  <section id="arquitectura" class="fade-in">
+    <div class="section-label"><i class="fas fa-cubes"></i> Fundamentos</div>
+    <h2 class="section-title">Arquitectura del Prompt Maestro</h2>
+    <p class="section-sub">Un prompt no es una orden; es un ecosistema. Cada pilar actúa como un engranaje que define la precisión de la respuesta de la IA.</p>
+    <div class="pilar-grid">
+      <div class="pilar-item">
+        <div class="pilar-icon" style="background:#eff6ff"><i class="fas fa-user-tie" style="color:#3b82f6"></i></div>
+        <strong>Rol</strong><small>¿Quién es la IA?</small>
+      </div>
+      <div class="pilar-item">
+        <div class="pilar-icon" style="background:#ecfdf5"><i class="fas fa-bullseye" style="color:#10b981"></i></div>
+        <strong>Objetivo</strong><small>¿Qué quieres lograr?</small>
+      </div>
+      <div class="pilar-item">
+        <div class="pilar-icon" style="background:#f5f3ff"><i class="fas fa-map-marker-alt" style="color:#8b5cf6"></i></div>
+        <strong>Contexto</strong><small>Entorno educativo</small>
+      </div>
+      <div class="pilar-item">
+        <div class="pilar-icon" style="background:#fffbeb"><i class="fas fa-users" style="color:#f59e0b"></i></div>
+        <strong>Audiencia</strong><small>Nivel de alumnos</small>
+      </div>
+      <div class="pilar-item">
+        <div class="pilar-icon" style="background:#ecfeff"><i class="fas fa-file-code" style="color:#06b6d4"></i></div>
+        <strong>Formato</strong><small>Tabla, MD, Lista...</small>
+      </div>
+      <div class="pilar-item">
+        <div class="pilar-icon" style="background:#fef2f2"><i class="fas fa-sliders-h" style="color:#ef4444"></i></div>
+        <strong>Restricciones</strong><small>Límites y filtros</small>
+      </div>
+    </div>
+
+    <div class="alert alert-tip" style="margin-top:1.5rem">
+      <i class="fas fa-lightbulb"></i>
+      <span><strong>Principio BIU:</strong> Cuantos más pilares actives en un mismo prompt, más precisa y útil será la respuesta de la IA. Empieza siempre por el Rol y el Objetivo.</span>
+    </div>
+  </section>
+
+  <!-- TÉCNICAS -->
+  <section class="fade-in">
+    <div class="section-label"><i class="fas fa-laptop-code"></i> Ingeniería</div>
+    <h2 class="section-title">Técnicas de Prompting</h2>
+    <p class="section-sub">Domina los métodos clave que distinguen a un docente que usa IA de uno que la domina.</p>
+
+    <div class="tab-bar" style="margin-top:1.5rem">
+      <button class="tab-btn active" onclick="showTab('rtf',this)">RTF</button>
+      <button class="tab-btn" onclick="showTab('colab',this)">IA Colaborativa</button>
+      <button class="tab-btn" onclick="showTab('shots',this)">Shots</button>
+      <button class="tab-btn" onclick="showTab('cadena',this)">Chain of Thought</button>
+      <button class="tab-btn" onclick="showTab('socratico',this)">Socrático</button>
+      <button class="tab-btn" onclick="showTab('errores',this)">Cero Errores</button>
+    </div>
+    <div id="tab-content" class="tab-content"></div>
+  </section>
+
+  <!-- CONSTRUCTOR -->
+  <section id="constructor" class="fade-in">
+    <div class="section-label"><i class="fas fa-magic"></i> Constructor</div>
+    <h2 class="section-title">Constructor de Prompts en Vivo</h2>
+    <p class="section-sub">Completa los campos y obtén tu prompt profesional al instante. Luego cópialo o envíalo directamente al Asistente.</p>
+
+    <div class="builder-wrap" style="margin-top:1.5rem">
+      <div class="builder-grid">
+        <div class="field-group">
+          <label>Rol Docente</label>
+          <input id="in-rol" class="builder-input" placeholder="Ej: Experto en neuroeducación" oninput="build()">
+        </div>
+        <div class="field-group">
+          <label>Tarea / Acción</label>
+          <input id="in-tarea" class="builder-input" placeholder="Ej: Diseña un examen de 5 preguntas" oninput="build()">
+        </div>
+        <div class="field-group">
+          <label>Audiencia</label>
+          <input id="in-aud" class="builder-input" placeholder="Ej: Estudiantes de 3º de primaria" oninput="build()">
+        </div>
+        <div class="field-group">
+          <label>Formato de Salida</label>
+          <select id="in-formato" class="builder-input" onchange="build()">
+            <option value="">Seleccionar...</option>
+            <option>tabla comparativa en Markdown</option>
+            <option>lista numerada paso a paso</option>
+            <option>esquema con viñetas</option>
+            <option>preguntas tipo test con opciones A/B/C/D</option>
+            <option>rúbrica de evaluación</option>
+            <option>mapa conceptual en texto</option>
+            <option>correo formal</option>
+            <option>guía de estudio</option>
+            <option>plan de clase semanal</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label>Tono</label>
+          <select id="in-tono" class="builder-input" onchange="build()">
+            <option value="motivador y cercano">Motivador y cercano</option>
+            <option value="académico y formal">Académico y formal</option>
+            <option value="simple y directo">Simple y directo</option>
+            <option value="socrático y reflexivo">Socrático y reflexivo</option>
+            <option value="creativo y lúdico">Creativo y lúdico</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label>Restricción Extra (opcional)</label>
+          <input id="in-restriccion" class="builder-input" placeholder="Ej: Sin lenguaje técnico, máx. 300 palabras" oninput="build()">
+        </div>
+        <div class="preview-box" id="preview">Esperando datos...</div>
+      </div>
+      <div class="builder-actions">
+        <button class="btn-copy" onclick="copyPreview()"><i class="fas fa-copy"></i> Copiar Prompt</button>
+        <button class="btn-send" onclick="sendToAssistant()"><i class="fas fa-paper-plane"></i> Enviar al Asistente</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- GALLERY -->
+  <section id="galeria" class="fade-in">
+    <div class="section-label"><i class="fas fa-book-open"></i> Biblioteca</div>
+    <h2 class="section-title">Galería de Prompts Docentes</h2>
+    <p class="section-sub">18 prompts listos para usar. Filtra por categoría y copia el que necesites.</p>
+
+    <div class="gallery-filters" style="margin-top:1.25rem">
+      <button class="filter-btn active" onclick="filterGallery('all',this)">Todos</button>
+      <button class="filter-btn" onclick="filterGallery('feedback',this)"><i class="fas fa-comment-dots"></i> Feedback</button>
+      <button class="filter-btn" onclick="filterGallery('planning',this)"><i class="fas fa-calendar-alt"></i> Planificación</button>
+      <button class="filter-btn" onclick="filterGallery('evaluation',this)"><i class="fas fa-clipboard-check"></i> Evaluación</button>
+      <button class="filter-btn" onclick="filterGallery('creativity',this)"><i class="fas fa-paint-brush"></i> Creatividad</button>
+      <button class="filter-btn" onclick="filterGallery('research',this)"><i class="fas fa-search"></i> Investigación</button>
+      <button class="filter-btn" onclick="filterGallery('inclusion',this)"><i class="fas fa-hands-helping"></i> Inclusión</button>
+    </div>
+
+    <div class="prompt-grid" id="prompt-grid" style="margin-top:1rem"></div>
+  </section>
+
+  <!-- CHECKLIST -->
+  <section class="fade-in">
+    <div class="section-label"><i class="fas fa-shield-alt"></i> Calidad</div>
+    <h2 class="section-title">Checklist de Calidad</h2>
+    <p class="section-sub">Antes de enviar tu prompt, verifica estos puntos para maximizar la calidad de la respuesta.</p>
+    <ul class="checklist" style="margin-top:1.25rem">
+      <li><i class="fas fa-check-circle"></i> Incluye un rol claro desde el inicio</li>
+      <li><i class="fas fa-check-circle"></i> Define la audiencia con precisión</li>
+      <li><i class="fas fa-check-circle"></i> Especifica el formato de salida deseado</li>
+      <li><i class="fas fa-check-circle"></i> Usa ejemplos cuando sea posible (few-shot)</li>
+      <li><i class="fas fa-check-circle"></i> Pide que te haga preguntas antes de responder</li>
+      <li><i class="fas fa-check-circle"></i> Verifica datos históricos (riesgo de alucinación)</li>
+      <li class="bad"><i class="fas fa-times-circle"></i> Evitar instrucciones vagas o ambiguas</li>
+      <li class="bad"><i class="fas fa-times-circle"></i> No des órdenes contradictorias</li>
+      <li class="bad"><i class="fas fa-times-circle"></i> No confundas rol con tarea</li>
+      <li class="bad"><i class="fas fa-times-circle"></i> No asumas que la IA recuerda conversaciones previas</li>
+    </ul>
+  </section>
+
+  <!-- ASISTENTE IA -->
+  <section id="asistente-sec" class="fade-in">
+    <div class="section-label"><i class="fas fa-robot"></i> Asistente con IA</div>
+    <h2 class="section-title">Asistente de Prompting</h2>
+    <p class="section-sub">Pregúntale al asistente cómo mejorar tus prompts, pide ejemplos específicos o recibe orientación personalizada.</p>
+
+    <div id="asistente" style="margin-top:1.5rem">
+      <div style="color:rgba(255,255,255,0.5);font-size:0.78rem;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:0.5rem">
+        <i class="fas fa-circle" style="color:#10b981;font-size:0.6rem"></i> Asistente Activo · Claude Sonnet
+      </div>
+
+      <div id="chat-window" class="chat-window">
+        <div class="msg">
+          <div class="msg-avatar ai"><i class="fas fa-robot"></i></div>
+          <div class="msg-bubble">¡Hola! Soy tu asistente de prompting educativo 👋 Puedo ayudarte a <strong>mejorar cualquier prompt</strong>, sugerirte técnicas según tu nivel educativo, o generar prompts completos desde cero. ¿Por dónde empezamos?</div>
+        </div>
+      </div>
+
+      <div class="chat-input-row">
+        <input id="chat-input" class="chat-input" placeholder="Escribe aquí tu pregunta o prompt a mejorar..." onkeydown="if(event.key==='Enter')sendChat()">
+        <button id="chat-btn" class="chat-send" onclick="sendChat()"><i class="fas fa-paper-plane"></i></button>
+      </div>
+
+      <div class="quick-chips">
+        <span class="chip" onclick="fillChip('¿Cómo mejorar un prompt RTF para matemáticas de primaria?')">📐 Prompt de Matemáticas</span>
+        <span class="chip" onclick="fillChip('Dame un prompt para generar una rúbrica de evaluación de escritura.')">📋 Rúbrica de Evaluación</span>
+        <span class="chip" onclick="fillChip('¿Qué diferencia hay entre zero-shot y few-shot prompting?')">🎯 Zero vs Few-shot</span>
+        <span class="chip" onclick="fillChip('Necesito un prompt socrático para filosofía en bachillerato.')">💭 Método Socrático</span>
+        <span class="chip" onclick="fillChip('¿Cómo adaptar un prompt para estudiantes con NEE?')">♿ Inclusión</span>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  <p><strong>Sinergia Educativa BIU (2024)</strong> & Manual Perís (2025)</p>
+  <p style="margin-top:6px">Diseñado para potenciar la Maestría en Ciencias de la Educación Virtual</p>
+</footer>
+
+<script>
+// ── TABS DATA ──
+const TAB_DATA = {
+  rtf: {
+    icon:'fas fa-layer-group', color:'#3b82f6',
+    title:'Método RTF (Rol · Tarea · Formato)',
+    desc:'La base del Catálogo BIU 2024. Asegura que la IA no divague dándole una identidad precisa, una misión concreta y el formato exacto de entrega.',
+    example:'"Actúa como un matemático de secundaria. Resuelve este problema de álgebra y entrégame el proceso paso a paso en formato de lista numerada."',
+    tips:['Define el rol con adjetivos específicos (experto, accesible, riguroso)', 'La tarea debe incluir un verbo de acción claro: diseña, explica, resume, evalúa', 'Especifica siempre el formato: tabla, lista, markdown, JSON']
+  },
+  colab: {
+    icon:'fas fa-handshake', color:'#10b981',
+    title:'IA Colaborativa (Técnica Perís 2025)',
+    desc:'En lugar de obtener una respuesta genérica, le pides a la IA que tome el control del proceso y recopile la información que necesita antes de responder.',
+    example:'"Si necesitas más datos sobre mis alumnos, su nivel o los recursos disponibles para ser más preciso, pregúntame antes de responder."',
+    tips:['Ideal para planificaciones largas o unidades didácticas complejas', 'La IA hará de 2 a 5 preguntas clave que mejorarán el resultado final', 'Úsalo cuando el contexto del aula sea muy específico']
+  },
+  shots: {
+    icon:'fas fa-crosshairs', color:'#8b5cf6',
+    title:'Estrategia de Disparos (Shots)',
+    desc:'Controla cuánta información de ejemplo le proporcionas a la IA para calibrar su respuesta.',
+    example:'<em>Zero-shot:</em> Pedir sin ejemplos. <em>One-shot:</em> Dar 1 ejemplo. <em>Few-shot:</em> Dar 2-3 ejemplos de cómo corriges para que la IA imite tu estilo pedagógico.',
+    tips:['Zero-shot: para tareas simples y directas', 'Few-shot: cuando necesitas un estilo de corrección específico', 'Cuantos más ejemplos buenos, más precisa la respuesta']
+  },
+  cadena: {
+    icon:'fas fa-link', color:'#f59e0b',
+    title:'Chain of Thought (Cadena de Pensamiento)',
+    desc:'Indica a la IA que muestre su razonamiento paso a paso. Ideal para materias de lógica y ciencias exactas, donde el proceso es tan importante como el resultado.',
+    example:'"Piensa paso a paso. Explica primero los conceptos previos necesarios, luego plantea el problema, y finalmente resuelve mostrando cada operación."',
+    tips:['Añade "piensa paso a paso" o "razona en voz alta" a cualquier prompt', 'Perfecto para física, química, matemáticas y filosofía', 'Permite detectar errores en el razonamiento de la IA']
+  },
+  socratico: {
+    icon:'fas fa-comment-question', color:'#06b6d4',
+    title:'Método Socrático con IA',
+    desc:'En lugar de que la IA dé respuestas, la instruyes para que guíe al alumno mediante preguntas reflexivas, fomentando el pensamiento crítico.',
+    example:'"No des la respuesta directa. Haz 3 preguntas socráticas progresivas que lleven al alumno a descubrir por sí mismo el error en su ensayo."',
+    tips:['Las preguntas deben ir de lo general a lo específico', 'Pide que las preguntas no sean cerradas (sí/no)', 'Combínalo con feedback formativo para máximo impacto']
+  },
+  errores: {
+    icon:'fas fa-shield-alt', color:'#ef4444',
+    title:'Protocolo Cero Errores',
+    desc:'Los errores más comunes que reducen la calidad del output. Corrígelos antes de enviar.',
+    example:'Mal: "Escribe algo sobre los romanos." → Bien: "Actúa como historiador. Escribe un resumen de 3 párrafos sobre la economía del Imperio Romano para alumnos de 12 años."',
+    tips:['Nunca uses "algo", "parecido", "como sea"', 'Verifica siempre datos históricos: la IA puede "alucinar"', 'Si el resultado no es bueno, refina el prompt, no lo repitas igual']
+  }
+};
+
+function showTab(key, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const d = TAB_DATA[key];
+  document.getElementById('tab-content').innerHTML = `
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:1rem">
+      <div style="width:36px;height:36px;border-radius:9px;background:${d.color}18;display:flex;align-items:center;justify-content:center">
+        <i class="${d.icon}" style="color:${d.color}"></i>
+      </div>
+      <strong style="font-size:1rem">${d.title}</strong>
+    </div>
+    <p style="color:var(--muted);font-size:0.9rem;margin-bottom:1rem">${d.desc}</p>
+    <div style="background:var(--surface);border-left:3px solid ${d.color};padding:12px 16px;border-radius:6px;font-style:italic;font-size:0.85rem;color:var(--text);margin-bottom:1rem">${d.example}</div>
+    <ul style="list-style:none;display:flex;flex-direction:column;gap:7px">
+      ${d.tips.map(t=>`<li style="display:flex;gap:8px;font-size:0.84rem;color:var(--muted)"><i class="fas fa-circle-dot" style="color:${d.color};margin-top:3px;font-size:0.7rem"></i>${t}</li>`).join('')}
+    </ul>
+  `;
+}
+showTab('rtf', document.querySelector('.tab-btn'));
+
+// ── BUILDER ──
+function build() {
+  const rol = document.getElementById('in-rol').value.trim() || '[Rol]';
+  const tarea = document.getElementById('in-tarea').value.trim() || '[Tarea]';
+  const aud = document.getElementById('in-aud').value.trim() || '[Audiencia]';
+  const fmt = document.getElementById('in-formato').value || '[Formato]';
+  const tono = document.getElementById('in-tono').value;
+  const rest = document.getElementById('in-restriccion').value.trim();
+  let prompt = `Actúa como ${rol}.\n\nTu tarea principal es: ${tarea}.\n\nTen en cuenta que el contenido está dirigido a: ${aud}.\n\nUtiliza un tono ${tono} y presenta la respuesta en formato de ${fmt}.`;
+  if (rest) prompt += `\n\nRestricciones adicionales: ${rest}.`;
+  prompt += `\n\nAntes de responder, si necesitas más información sobre el contexto o los alumnos, hazme las preguntas necesarias.`;
+  document.getElementById('preview').textContent = prompt;
+}
+build();
+
+function copyPreview() {
+  const t = document.getElementById('preview').textContent;
+  navigator.clipboard.writeText(t).then(() => {
+    const b = document.querySelector('.btn-copy');
+    b.innerHTML = '<i class="fas fa-check"></i> ¡Copiado!';
+    setTimeout(() => b.innerHTML = '<i class="fas fa-copy"></i> Copiar Prompt', 1800);
+  });
+}
+function sendToAssistant() {
+  const t = document.getElementById('preview').textContent;
+  document.getElementById('chat-input').value = 'Mejora este prompt: ' + t.substring(0, 200) + '...';
+  document.getElementById('asistente-sec').scrollIntoView({ behavior: 'smooth' });
+  setTimeout(() => document.getElementById('chat-input').focus(), 600);
+}
+
+// ── GALLERY DATA ──
+const PROMPTS = [
+  { cat:'feedback', title:'Feedback Socrático', text:'Revisa este ensayo. No des la solución directamente. Haz 3 preguntas socráticas progresivas que guíen al alumno a encontrar sus propios errores de coherencia y argumentación.', tags:['ensayo','reflexión','secundaria'], level:'Secundaria' },
+  { cat:'feedback', title:'Corrector de Estilo Personalizado', text:'Corrige este texto imitando mi estilo de corrección. [EJEMPLO DE CORRECCIÓN MÍA]. Ahora aplica el mismo criterio a este nuevo texto: [TEXTO A CORREGIR].', tags:['escritura','few-shot','estilo'], level:'Todos los niveles' },
+  { cat:'feedback', title:'Revisión de Par a Par', text:'Actúa como un compañero de clase de 14 años. Lee este trabajo y da 2 aspectos positivos y 1 sugerencia de mejora usando un lenguaje amigable y sin tecnicismos.', tags:['peer review','ESO','informal'], level:'ESO / Media' },
+  { cat:'planning', title:'Asistente de Planificación', text:'Actúa como diseñador curricular experto. Ayúdame a crear una unidad didáctica sobre [TEMA]. Antes de empezar, pregúntame sobre mis objetivos, nivel del grupo, recursos disponibles y tiempo asignado.', tags:['unidad','currículum','colaborativo'], level:'Todos los niveles' },
+  { cat:'planning', title:'Plan de Clase en 5 Minutos', text:'Soy docente de [MATERIA] para [EDAD/NIVEL]. Crea un plan de clase de 50 minutos sobre [TEMA] con: objetivo, actividad de inicio (5 min), desarrollo (35 min), cierre (10 min) y recursos necesarios.', tags:['planificación rápida','práctica'], level:'Todos los niveles' },
+  { cat:'planning', title:'Secuencia de Preguntas Clave', text:'Para iniciar una clase sobre [TEMA] con alumnos de [NIVEL], genera 5 preguntas detonantes que activen conocimientos previos, despierten curiosidad y conecten con la vida cotidiana del alumno.', tags:['motivación','inicio de clase'], level:'Todos los niveles' },
+  { cat:'evaluation', title:'Rúbrica Automática', text:'Diseña una rúbrica de evaluación para una [TIPO DE TAREA] de [MATERIA] para [NIVEL]. Incluye 4 criterios, 4 niveles de desempeño (excelente, bueno, suficiente, insuficiente) y descriptores específicos.', tags:['rúbrica','evaluación','tabla'], level:'Secundaria / Bachillerato' },
+  { cat:'evaluation', title:'Banco de Examen Adaptativo', text:'Crea 10 preguntas de opción múltiple (A/B/C/D) sobre [TEMA] para [NIVEL]. Incluye 3 preguntas de comprensión, 4 de aplicación y 3 de análisis. Proporciona las respuestas correctas al final.', tags:['examen','bloom','test'], level:'Todos los niveles' },
+  { cat:'evaluation', title:'Análisis de Errores Frecuentes', text:'Basándote en las respuestas de mis alumnos sobre [TEMA], identifica los 3 errores conceptuales más frecuentes, explica por qué ocurren y sugiere una actividad correctiva para cada uno.', tags:['diagnóstico','errores','remedial'], level:'Primaria / Secundaria' },
+  { cat:'creativity', title:'Simplificador Feynman', text:'Explica [TEMA COMPLEJO] para una audiencia de [EDAD]. Usa 2 analogías de la vida cotidiana o del deporte, evita lenguaje técnico y finaliza con una pregunta que invite a reflexionar.', tags:['feynman','analogías','simplificación'], level:'Primaria' },
+  { cat:'creativity', title:'Gamificación de Contenido', text:'Convierte la lección sobre [TEMA] en una dinámica de gamificación para [NIVEL]. Diseña 3 retos progresivos con reglas, puntos y un reto final boss. Que sea motivador y con sentido educativo.', tags:['gamificación','motivación','dinámica'], level:'Secundaria' },
+  { cat:'creativity', title:'Historia Educativa (Storytelling)', text:'Crea una historia corta de 3 párrafos ambientada en [CONTEXTO] que enseñe de forma natural el concepto de [TEMA]. Los personajes deben enfrentar un problema que solo se resuelva aplicando el concepto.', tags:['storytelling','narrativa','primaria'], level:'Primaria' },
+  { cat:'research', title:'Guía de Investigación Guiada', text:'Actúa como tutor de investigación. Mi alumno de [NIVEL] investigará sobre [TEMA]. Diseña una hoja de ruta con 5 preguntas guía, 3 fuentes recomendadas y un esquema de presentación final.', tags:['TFG','investigación','metodología'], level:'Bachillerato / Universidad' },
+  { cat:'research', title:'Detector de Sesgos en Fuentes', text:'Lee esta fuente: [TEXTO/URL]. Identifica posibles sesgos, intereses detrás del contenido, datos que requieren verificación y sugiere 2 fuentes alternativas para contrastar la información.', tags:['pensamiento crítico','fuentes','verificación'], level:'Bachillerato' },
+  { cat:'research', title:'Generador de Hipótesis', text:'Para el experimento de [TEMA] en [MATERIA], ayuda a mis alumnos de [NIVEL] a formular 3 hipótesis bien redactadas (formato: "Si... entonces... porque...") basadas en sus conocimientos previos.', tags:['método científico','hipótesis','ciencias'], level:'Secundaria / Bachillerato' },
+  { cat:'inclusion', title:'Adaptación NEE', text:'Adapta esta actividad: [ACTIVIDAD ORIGINAL] para un alumno con [NECESIDAD ESPECÍFICA: dislexia/TDAH/TEA]. Mantén el objetivo de aprendizaje pero ajusta la presentación, el tiempo y los apoyos visuales necesarios.', tags:['NEE','accesibilidad','adaptación'], level:'Todos los niveles' },
+  { cat:'inclusion', title:'Multilingüe y Diversidad Cultural', text:'Crea una actividad sobre [TEMA] que sea culturalmente inclusiva para un aula con alumnos de [NACIONALIDADES/CULTURAS]. Incluye referencias de diferentes tradiciones y evita ejemplos etnocéntricos.', tags:['diversidad','multiculturalidad','inclusión'], level:'Todos los niveles' },
+  { cat:'inclusion', title:'Diferenciación por Niveles', text:'Para el tema [TEMA] en [MATERIA], diseña 3 versiones de la misma actividad: una para alumnos con dificultades, otra estándar y otra de enriquecimiento, manteniendo el mismo objetivo curricular.', tags:['diferenciación','atención diversidad','niveles'], level:'Primaria / Secundaria' }
+];
+
+function renderGallery(filter) {
+  const grid = document.getElementById('prompt-grid');
+  grid.innerHTML = '';
+  PROMPTS.forEach(p => {
+    if (filter !== 'all' && p.cat !== filter) return;
+    const card = document.createElement('div');
+    card.className = `prompt-card cat-${p.cat}`;
+    card.innerHTML = `
+      <div class="pc-header">
+        <span class="pc-badge b-${p.cat}">${catLabel(p.cat)}</span>
+        <button class="pc-copy" onclick="copyPromptCard(this)" title="Copiar"><i class="fas fa-copy"></i> Copiar</button>
+      </div>
+      <div class="pc-title">${p.title}</div>
+      <div class="pc-text">${p.text}</div>
+      <div class="pc-footer">
+        <div class="pc-tags">${p.tags.map(t=>`<span class="pc-tag">#${t}</span>`).join('')}</div>
+        <span class="pc-level"><i class="fas fa-graduation-cap" style="margin-right:4px;color:var(--accent)"></i>${p.level}</span>
+      </div>
+    `;
+    card.dataset.text = p.text;
+    grid.appendChild(card);
+  });
+}
+function catLabel(c) {
+  const m = {feedback:'💬 Feedback',planning:'📅 Planificación',evaluation:'📋 Evaluación',creativity:'🎨 Creatividad',research:'🔍 Investigación',inclusion:'🤝 Inclusión'};
+  return m[c] || c;
+}
+function filterGallery(cat, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderGallery(cat);
+}
+function copyPromptCard(btn) {
+  const text = btn.closest('.prompt-card').dataset.text;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.innerHTML = '<i class="fas fa-check"></i> ¡Copiado!';
+    setTimeout(() => btn.innerHTML = '<i class="fas fa-copy"></i> Copiar', 1800);
+  });
+}
+renderGallery('all');
+
+// ── ASSISTANT ──
+const SYSTEM_PROMPT = `Eres un asistente experto en prompting educativo, basado en el Catálogo BIU 2024 y el Manual Perís 2025. Ayudas a docentes a crear, mejorar y optimizar prompts para usar con inteligencia artificial en el aula.
+
+Tus especialidades:
+- Método RTF (Rol, Tarea, Formato)
+- IA Colaborativa y Socrática
+- Estrategias Zero-shot, Few-shot y Chain of Thought
+- Feedback formativo con IA
+- Diseño de rúbricas, planificaciones y evaluaciones
+- Adaptación para NEE e inclusión educativa
+
+Responde siempre en español. Sé conciso, práctico y pedagógico. Cuando mejores un prompt, muestra la versión mejorada claramente formateada. Usa ejemplos concretos del aula cuando sea útil.`;
+
+let chatHistory = [];
+
+async function sendChat() {
+  const inp = document.getElementById('chat-input');
+  const msg = inp.value.trim();
+  if (!msg) return;
+  inp.value = '';
+  addMsg('user', msg);
+  chatHistory.push({ role: 'user', content: msg });
+
+  const btn = document.getElementById('chat-btn');
+  btn.disabled = true;
+  const typingId = addTyping();
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: SYSTEM_PROMPT,
+        messages: chatHistory
+      })
+    });
+    const data = await res.json();
+    removeTyping(typingId);
+    const reply = data.content?.map(b => b.text || '').join('') || 'Lo siento, hubo un error. Intenta de nuevo.';
+    chatHistory.push({ role: 'assistant', content: reply });
+    addMsg('ai', reply);
+  } catch(e) {
+    removeTyping(typingId);
+    addMsg('ai', '⚠️ Error de conexión. Verifica tu conexión a internet e intenta nuevamente.');
+  }
+  btn.disabled = false;
+}
+
+function addMsg(role, text) {
+  const w = document.getElementById('chat-window');
+  const d = document.createElement('div');
+  d.className = `msg ${role === 'user' ? 'user-msg' : ''}`;
+  const formatted = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
+  d.innerHTML = `
+    <div class="msg-avatar ${role}">${role === 'ai' ? '<i class="fas fa-robot"></i>' : '<i class="fas fa-user"></i>'}</div>
+    <div class="msg-bubble">${formatted}</div>
+  `;
+  w.appendChild(d);
+  w.scrollTop = w.scrollHeight;
+  return d;
+}
+
+function addTyping() {
+  const w = document.getElementById('chat-window');
+  const id = 'typing-' + Date.now();
+  const d = document.createElement('div');
+  d.className = 'msg'; d.id = id;
+  d.innerHTML = `<div class="msg-avatar ai"><i class="fas fa-robot"></i></div><div class="msg-bubble"><div class="typing-dot"><span></span><span></span><span></span></div></div>`;
+  w.appendChild(d);
+  w.scrollTop = w.scrollHeight;
+  return id;
+}
+function removeTyping(id) {
+  const el = document.getElementById(id);
+  if (el) el.remove();
+}
+function fillChip(text) {
+  document.getElementById('chat-input').value = text;
+  document.getElementById('chat-input').focus();
+}
+
+// ── SCROLL OBSERVER ──
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
