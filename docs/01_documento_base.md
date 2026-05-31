@@ -1,5 +1,5 @@
 # Documentación de Proyecto: Sinerg-IA (Sinergia IA)
-## Portal Maestro de Prompting Educativo (Versión Extendida y Plan de Ingeniería)
+## Portal Maestro de Prompting Educativo 
 
 Este documento constituye una guía técnica, conceptual y de diseño del portal interactivo **Sinergia IA · Portal Maestro de Prompting Educativo** (`Sinergia_IA_v2.html`). Su propósito es proveer una memoria detallada del estado actual de la aplicación, sus fundamentos pedagógicos, su arquitectura técnica, los desafíos de desarrollo y seguridad identificados durante la auditoría del código fuente, así como un plan maestro de optimización técnica y una evaluación epistemológica del material documental que nutre el proyecto.
 
