@@ -1,5 +1,5 @@
 # Documentación de Proyecto: Sinerg-IA (Sinergia IA)
-## Portal Maestro de Prompting Educativo 
+## Portal Maestro de Prompting Educativo
 
 Este documento constituye una guía técnica, conceptual y de diseño del portal interactivo **Sinergia IA · Portal Maestro de Prompting Educativo** (`Sinergia_IA_v2.html`). Su propósito es proveer una memoria detallada del estado actual de la aplicación, sus fundamentos pedagógicos, su arquitectura técnica, los desafíos de desarrollo y seguridad identificados durante la auditoría del código fuente, así como un plan maestro de optimización técnica y una evaluación epistemológica del material documental que nutre el proyecto.
 
@@ -45,25 +45,25 @@ El archivo `Sinergia_IA_v2.html` está estructurado de la siguiente forma:
    - Visualización por tarjetas de los 6 pilares esenciales de la construcción de un prompt maestro (Rol, Objetivo, Contexto, Audiencia, Formato, Restricciones), utilizando iconos vectoriales (FontAwesome) integrados en círculos de colores de baja opacidad adaptativos.
 
 5. **Módulo Educativo de Técnicas Avanzadas (`.tab-bar` y `#tab-content`):**
-   - Motor JavaScript de renderizado condicional. Al hacer clic en las pestañas, se reemplaza dinámicamente el contenido del nodo HTML mediante un objeto de datos indexado (`TAB_DATA`).
+   - Motor JavaScript de renderizado condicional. Al hacer clic en las pestañas, se reemplaza dinámicamente el contenido del nodo HTML mediante un objeto de datos indexado.
    - Cubre las técnicas: RTF, IA Colaborativa, Shots, Chain of Thought, Método Socrático y Protocolo Cero Errores.
 
 6. **Constructor Dinámico en Vivo (`#constructor`):**
    - Formulario interactivo que recopila datos clave: Rol, Tarea/Acción, Audiencia, Formato de Salida, Tono y Restricción Extra.
-   - Evento de entrada reactivo (`oninput="build()"`) que concatena las variables en una cadena estructurada legible y la expone dentro de un contenedor simulado de consola (`.preview-box`).
-   - Acciones de copiado al portapapeles (`navigator.clipboard.writeText`) con retroalimentación visual inmediata ("¡Copiado!") y redirección al asistente.
+   - Evento de entrada reactivo que concatena las variables en una cadena estructurada legible y la expone dentro de un contenedor simulado de consola.
+   - Acciones de copiado al portapapeles con retroalimentación visual inmediata ("¡Copiado!") y redirección al asistente.
 
 7. **Biblioteca Interactiva Filtrable (`#galeria`):**
-   - 18 tarjetas de prompts predefinidas estructuradas en un array de objetos JavaScript (`PROMPTS`).
-   - Las tarjetas cambian de color superior en su borde según su categoría (`.cat-feedback`, `.cat-planning`, etc.) usando gradientes lineales.
-   - Botones de copiado individual en cada tarjeta y renderizado dinámico mediante filtrado por categorías (`filterGallery`).
+   - 18 tarjetas de prompts predefinidas estructuradas en un array de objetos JavaScript.
+   - Las tarjetas cambian de color superior en su borde según su categoría usando gradientes lineales.
+   - Botones de copiado individual en cada tarjeta y renderizado dinámico mediante filtrado por categorías.
 
 8. **Lista de Autoevaluación y Calidad (`.checklist`):**
    - Un check-list visual de dos colores (verde para las buenas prácticas a seguir, rojo para las malas prácticas a evitar) que funciona como un recordatorio heurístico antes del envío de instrucciones a la IA.
 
 9. **Asistente IA Integrado (`#asistente-sec`):**
-   - Interfaz gráfica que emula una aplicación de mensajería (burbujas de chat diferenciadas por clases `.ai` y `.user`).
-   - Fichas de sugerencias rápidas (`.quick-chips`) que pre-cargan preguntas frecuentes en el campo de entrada al hacer clic, facilitando el descubrimiento de funciones del asistente.
+   - Interfaz gráfica que emula una aplicación de mensajería (burbujas de chat diferenciadas por clases).
+   - Fichas de sugerencias rápidas que pre-cargan preguntas frecuentes en el campo de entrada al hacer clic, facilitando el descubrimiento de funciones del asistente.
 
 ### 2.2. Fuera de Alcance (Out of Scope)
 * **Base de Datos y Persistencia:** No existe persistencia de datos del lado del servidor. Cualquier prompt nuevo diseñado en el constructor o el historial de mensajes de la conversación se borra permanentemente al refrescar la pantalla.
@@ -77,37 +77,17 @@ El archivo `Sinergia_IA_v2.html` está estructurado de la siguiente forma:
 Durante la auditoría de desarrollo y seguridad de `Sinergia_IA_v2.html`, se detectaron vulnerabilidades y cuellos de botella técnicos de alta relevancia:
 
 ### 3.1. Vulnerabilidad y Bloqueo de la API de Anthropic (Error de CORS)
-El asistente del chat tiene programada una llamada directa a los servidores de Anthropic:
-```javascript
-const res = await fetch('https://api.anthropic.com/v1/messages', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({
-    model: 'claude-sonnet-4-20250514',
-    max_tokens: 1000,
-    system: SYSTEM_PROMPT,
-    messages: chatHistory
-  })
-});
-```
-Esta implementación presenta dificultades insalvables en producción:
-1. **Fallo de CORS (Cross-Origin Resource Sharing):** La API oficial de Anthropic está configurada para denegar solicitudes provenientes de entornos web de cliente directos (navegadores) para prevenir la filtración de credenciales. Al ejecutar el chat, el navegador arroja un error crítico:
-   `Access to fetch at 'https://api.anthropic.com/v1/messages' from origin 'null' (or local domain) has been blocked by CORS policy.`
-2. **Falta de Cabeceras de Autorización y Fuga de API Key:** La API requiere el header `'x-api-key': 'TU_API_KEY'`. Si el desarrollador coloca su clave allí para solventar el problema, cualquier usuario del sitio podría abrir la pestaña *Network* del inspector del navegador y robar la clave, cargando costos de consumo al propietario de la cuenta.
+El asistente del chat tiene programada una llamada directa a los servidores de Anthropic desde el cliente. Esta implementación presenta dificultades insalvables en producción:
+1. **Fallo de CORS (Cross-Origin Resource Sharing):** La API oficial de Anthropic está configurada para denegar solicitudes provenientes de entornos web de cliente directos (navegadores) para prevenir la filtración de credenciales. Al ejecutar el chat, el navegador arroja un error de red crítico debido a que el origen local es bloqueado por las políticas CORS del proveedor.
+2. **Falta de Cabeceras de Autorización y Fuga de API Key:** La API requiere cabeceras con el token de acceso privado. Escribir o inyectar esta clave directamente en el script de cliente la expone públicamente a cualquier usuario que inspeccione el código fuente o monitorice el tráfico de red, cargando posibles costos de consumo al propietario de la cuenta.
 
 ### 3.2. Dependencia de Red y Caída de Estilos (Offline Limit)
-El código carga de forma externa recursos críticos:
-* Fuentes tipográficas: `https://fonts.googleapis.com/css2?family=Syne...`
-* Iconos: `https://cdnjs.cloudflare.com/ajax/libs/font-awesome/...`
-* Lógica y estilos del navegador.
+El código carga de forma externa recursos críticos como fuentes tipográficas de Google Fonts y librerías de iconos de FontAwesome.
 * **Impacto en el Aula:** En escuelas rurales o instituciones con redes Wi-Fi protegidas o lentas, el portal se renderiza de forma rota. Sin FontAwesome, las tarjetas pierden legibilidad al desaparecer los iconos de control, y el portal completo se visualiza en la tipografía sans-serif genérica del sistema.
 
 ### 3.3. Parseador Ineficiente de Mensajes en el Chat
-La interfaz del chat procesa el texto devuelto usando un parseador casero rudimentario:
-```javascript
-const formatted = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
-```
-* **Impacto:** Si la IA responde con tablas comparativas, listas indentadas o bloques de código (muy común al pedirle rúbricas o guías didácticas), el chat de la pantalla muestra el texto en un bloque continuo e ilegible con etiquetas sueltas, arruinando la usabilidad del asistente para la entrega de material estructurado.
+La interfaz del chat procesa el texto devuelto usando un reemplazo casero rudimentario basado en expresiones regulares para aplicar etiquetas de negrita y saltos de línea.
+* **Impacto:** Si la IA responde con tablas comparativas, listas indentadas o bloques de código (muy común al pedirle rúbricas o guías didácticas), el chat muestra el texto en un bloque continuo e ilegible con etiquetas sueltas, arruinando la usabilidad del asistente para la entrega de material estructurado.
 
 ### 3.4. Dificultad de Mantenimiento por Monolitismo
 El proyecto mantiene HTML, CSS y JS condensados en un solo archivo de 665 líneas.
@@ -117,218 +97,25 @@ El proyecto mantiene HTML, CSS y JS condensados en un solo archivo de 665 línea
 
 ## 4. Plan de Ingeniería y Propuestas de Mejora
 
-Para transformar Sinerg-IA en una aplicación robusta, modular y lista para su despliegue comercial o institucional, se definen los siguientes cambios arquitectónicos con sus respectivos códigos de ejemplo para la implementación inmediata.
+Para transformar Sinerg-IA en una aplicación robusta, modular y lista para su despliegue comercial o institucional, se definen las siguientes propuestas de mejora conceptuales y funcionales:
 
 ### 4.1. Solución al Chat: Simulador Mock / Proxy Backend
-Para evitar la exposición de la clave API y solventar el bloqueo por CORS, se plantean dos caminos:
+Para evitar la exposición de la clave API y solventar el bloqueo por CORS, se plantean dos soluciones alternativas:
 
-#### Alternativa A: Integración de un Simulador Inteligente Local (100% Gratuito y Offline)
-Se puede reemplazar la función `sendChat()` con un simulador local que procese heurísticas del mensaje del docente y conteste usando respuestas contextuales prediseñadas.
+* **Alternativa A: Integración de un Simulador Inteligente Local (Offline y Gratuito):**
+  Consiste en capturar las entradas de chat enviadas por el docente y pasarlas por un filtro de palabras clave en JavaScript. Si el texto del docente contiene términos como "matemáticas", "rúbrica", "socrático" o "evaluación", el script intercepta el flujo de red y devuelve de forma instantánea una respuesta contextual predefinida y enriquecida pedagógicamente. Esto elimina la necesidad de API Keys, elimina el error de CORS y permite que el chat sea 100% funcional sin conexión a internet.
 
-*Ejemplo de código a integrar en JS:*
-```javascript
-// Objeto de respuestas automáticas contextuales
-const RESPUESTAS_MOCK = {
-  matematicas: "Para matemáticas de primaria, te sugiero usar el **Método RTF**:\n\n* **Rol**: Experto en didáctica matemática lúdica.\n* **Tarea**: Diseña un juego de mesa de 5 rondas para enseñar fracciones.\n* **Formato**: Lista numerada con reglas y materiales.",
-  rubrica: "Aquí tienes un prompt para generar una rúbrica:\n\n`Actúa como evaluador educativo. Diseña una rúbrica en formato tabla de 4 columnas para evaluar un ensayo de escritura creativa en 3º de secundaria. Criterios: Coherencia, Ortografía, Originalidad y Estructura.`",
-  socratico: "El método socrático se implementa así:\n\n`No le des la respuesta al estudiante. Cuando te plantee una duda sobre física, respóndele con una pregunta reflexiva que le ayude a identificar el principio físico involucrado.`",
-  default: "¡Excelente pregunta! Recuerda que para mejorar tu prompt debes asegurar que contenga al menos un **Rol** claro, una **Tarea** detallada y un **Formato de salida** (como tabla o lista)."
-};
+* **Alternativa B: Creación de un Micro-Servidor Proxy Seguro:**
+  Consiste en estructurar un pequeño servidor intermedio (desplegado en plataformas seguras) que maneje de forma privada la clave de API a través de variables de entorno. La aplicación web realiza peticiones locales al servidor proxy, el cual recibe las solicitudes, las firma de forma segura, se comunica con los servidores oficiales del proveedor de IA y devuelve el resultado limpio al cliente, resolviendo de raíz el problema de CORS y protegiendo el token contra filtraciones.
 
-async function sendChat() {
-  const inp = document.getElementById('chat-input');
-  const msg = inp.value.trim();
-  if (!msg) return;
-  
-  inp.value = '';
-  addMsg('user', msg);
-  
-  const btn = document.getElementById('chat-btn');
-  btn.disabled = true;
-  const typingId = addTyping();
-  
-  // Simulación de delay de red para realismo
-  setTimeout(() => {
-    removeTyping(typingId);
-    
-    // Búsqueda de palabra clave
-    let lowerMsg = msg.toLowerCase();
-    let respuestaText = RESPUESTAS_MOCK.default;
-    
-    if (lowerMsg.includes('matemática') || lowerMsg.includes('primaria')) {
-      respuestaText = RESPUESTAS_MOCK.matematicas;
-    } else if (lowerMsg.includes('rúbrica') || lowerMsg.includes('evalua')) {
-      respuestaText = RESPUESTAS_MOCK.rubrica;
-    } else if (lowerMsg.includes('socrático') || lowerMsg.includes('filosofía')) {
-      respuestaText = RESPUESTAS_MOCK.socratico;
-    }
-    
-    addMsg('ai', respuestaText);
-    btn.disabled = false;
-  }, 1000);
-}
-```
-
-#### Alternativa B: Creación de un Micro-Servidor Proxy Seguro (Node.js/Express)
-Si se desea la conexión real a modelos avanzados de lenguaje (como Claude 3.5 Sonnet o Gemini 1.5 Pro), se debe montar un servidor backend intermedio. El cliente enviará su petición al servidor local y el servidor procesará la solicitud con la API Key guardada de forma segura en las variables de entorno del servidor.
-
-*Ejemplo de código para un servidor Express seguro (`server.js`):*
-```javascript
-const express = require('express');
-const cors = require('cors');
-const { Anthropic } = require('@anthropic-ai/sdk');
-require('dotenv').config();
-
-const app = express();
-app.use(cors()); // Configuración segura de CORS
-app.use(express.json());
-
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY, // Almacenado de forma segura en el servidor
-});
-
-app.post('/api/chat', async (req, res) => {
-  try {
-    const { messages, system } = req.body;
-    
-    const response = await anthropic.messages.create({
-      model: 'claude-3-5-sonnet-20241022',
-      max_tokens: 1024,
-      system: system,
-      messages: messages
-    });
-    
-    res.json({ text: response.content[0].text });
-  } catch (error) {
-    console.error("Error en comunicación con Anthropic:", error);
-    res.status(500).json({ error: "Error interno del servidor de IA" });
-  }
-});
-
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Servidor de IA seguro corriendo en puerto ${PORT}`));
-```
-
-*Modificación correspondiente en la función `sendChat()` de la aplicación web:*
-```javascript
-// Reemplazar la llamada directa a Anthropic por el endpoint del Proxy Seguro
-const res = await fetch('http://localhost:3000/api/chat', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({
-    system: SYSTEM_PROMPT,
-    messages: chatHistory
-  })
-});
-const data = await res.json();
-const reply = data.text || 'Lo siento, hubo un error de procesamiento.';
-```
-
-### 4.2. Integración de un Renderizador de Markdown Estándar (Marked.js)
-Para solucionar el problema de renderizado de tablas y listas en la burbuja de chat, se propone inyectar la librería ligera Marked.js mediante un CDN o localmente en las cabeceras de la app.
-
-*Cabecera HTML:*
-```html
-<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-```
-
-*Modificación de la función de inserción de mensajes (`addMsg`):*
-```javascript
-function addMsg(role, text) {
-  const w = document.getElementById('chat-window');
-  const d = document.createElement('div');
-  d.className = `msg ${role === 'user' ? 'user-msg' : ''}`;
-  
-  // Utilizar marked.parse para interpretar código, listas y tablas Markdown
-  const parsedContent = role === 'ai' ? marked.parse(text) : text.replace(/\n/g, '<br>');
-  
-  d.innerHTML = `
-    <div class="msg-avatar ${role}">${role === 'ai' ? '<i class="fas fa-robot"></i>' : '<i class="fas fa-user"></i>'}</div>
-    <div class="msg-bubble">${parsedContent}</div>
-  `;
-  w.appendChild(d);
-  w.scrollTop = w.scrollHeight;
-  return d;
-}
-```
+### 4.2. Integración de un Renderizador de Markdown Estándar
+Para resolver el problema del texto desestructurado en el chat, se propone la integración de una librería ligera de parseo como Marked.js. Al importar esta herramienta, el script de mensajería procesará la respuesta de la IA a través de su motor de renderizado antes de insertar el contenido en la burbuja de chat. Esto asegura que tablas comparativas, rúbricas de evaluación y viñetas estructuradas se muestren con el formato visual correcto en pantalla.
 
 ### 4.3. Implementación de Persistencia Local (`localStorage`)
-Se debe incorporar una función que guarde la previsualización del constructor de prompts en el caché del navegador del docente, permitiendo recuperar su trabajo al instante en caso de reinicio involuntario.
-
-*Ejemplo de código de persistencia:*
-```javascript
-// Almacenar datos en localStorage al construir
-function build() {
-  const rol = document.getElementById('in-rol').value.trim();
-  const tarea = document.getElementById('in-tarea').value.trim();
-  const aud = document.getElementById('in-aud').value.trim();
-  const fmt = document.getElementById('in-formato').value;
-  const tono = document.getElementById('in-tono').value;
-  const rest = document.getElementById('in-restriccion').value.trim();
-  
-  // Guardar estado en un objeto JSON
-  const formState = { rol, tarea, aud, fmt, tono, rest };
-  localStorage.setItem('sinergia_form_state', JSON.stringify(formState));
-  
-  // Ensamblar el prompt
-  let prompt = `Actúa como ${rol || '[Rol]'}.\n\nTu tarea principal es: ${tarea || '[Tarea]'}.\n\nTen en cuenta que el contenido está dirigido a: ${aud || '[Audiencia]'}.\n\nUtiliza un tono ${tono} y presenta la respuesta en formato de ${fmt || '[Formato]'}.`;
-  if (rest) prompt += `\n\nRestricciones adicionales: ${rest}.`;
-  
-  document.getElementById('preview').textContent = prompt;
-}
-
-// Cargar datos guardados al cargar la página
-window.addEventListener('DOMContentLoaded', () => {
-  const savedState = localStorage.getItem('sinergia_form_state');
-  if (savedState) {
-    const state = JSON.parse(savedState);
-    document.getElementById('in-rol').value = state.rol || '';
-    document.getElementById('in-tarea').value = state.tarea || '';
-    document.getElementById('in-aud').value = state.aud || '';
-    document.getElementById('in-formato').value = state.fmt || '';
-    document.getElementById('in-tono').value = state.tono || 'motivador y cercano';
-    document.getElementById('in-restriccion').value = state.rest || '';
-    build();
-  }
-});
-```
+Se propone configurar funciones de almacenamiento de datos locales en el navegador. Al ingresar texto en el constructor de prompts, los campos se serializan y guardan automáticamente en caché. Al recargar la página, el portal lee este almacenamiento para restaurar el progreso del usuario, evitando pérdidas accidentales de información. De igual forma, esta funcionalidad permite almacenar los prompts favoritos del docente seleccionados de la biblioteca y el historial activo de la conversación de chat.
 
 ### 4.4. Preparación para Funcionamiento 100% Offline (PWA)
-Para solventar la inestabilidad de red en las escuelas, se propone crear un archivo `sw.js` (Service Worker) para cachear los assets e iconos del sitio de forma permanente.
-
-*Registro en el script principal de `Sinergia_IA_v2.html`:*
-```javascript
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js')
-      .then(reg => console.log('Service Worker registrado con éxito', reg))
-      .catch(err => console.warn('Error al registrar Service Worker', err));
-  });
-}
-```
-
-*Contenido del archivo `sw.js` (en la raíz del proyecto):*
-```javascript
-const CACHE_NAME = 'sinergia-ia-v1';
-const ASSETS = [
-  './Sinergia_IA_v2.html',
-  'https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap',
-  'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css',
-  'https://cdn.jsdelivr.net/npm/marked/marked.min.js'
-];
-
-self.addEventListener('install', e => {
-  e.waitUntil(
-    caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS))
-  );
-});
-
-self.addEventListener('fetch', e => {
-  e.respondWith(
-    caches.match(e.request).then(response => response || fetch(e.request))
-  );
-});
-```
+Para solventar la inestabilidad de conexión a internet en los centros educativos, se propone registrar un Service Worker que gestione la caché de los assets de la aplicación. Esta tecnología descarga y almacena de forma local la estructura HTML, las tipografías de Google Fonts y las hojas de estilos de iconos de FontAwesome. De esta manera, el portal se transforma en una Aplicación Web Progresiva (PWA) capaz de instalarse y ejecutarse sin conexión Wi-Fi o datos móviles.
 
 ---
 
@@ -338,7 +125,7 @@ Para el diseño conceptual y funcional del portal interactivo, se contó con dos
 1. **`Catálogo de Prompts - BIU - 2024.pdf`**
 2. **`Prompting en educación.pdf`**
 
-A continuación, se detalla un desglose analítico del valor pragmático de cada uno, su usabilidad en el desarrollo de software y su proyección a futuro.
+A continuación, se presenta un desglose analítico del valor pragmático de cada uno, su usabilidad en el desarrollo de software y su proyección a futuro.
 
 ### 5.1. Comparativa Metodológica y Operativa
 
@@ -348,7 +135,7 @@ A continuación, se detalla un desglose analítico del valor pragmático de cada
 | **Naturaleza del Contenido** | Recetario práctico estructurado en plantillas listas para su uso. | Ensayo teórico-práctico sobre el procesamiento cognitivo de la IA. |
 | **Nivel de Abstracción** | **Bajo:** Instrucciones de "rellenar espacios en blanco". | **Alto:** Análisis de sesgos, explicabilidad y flujos interactivos de razonamiento. |
 | **Estructura Pedagógica** | Ejemplos concretos clasificados por objetivos de aprendizaje de la BIU. | Técnicas de andamiaje cognitivo adaptados al desarrollo intelectual del estudiante. |
-| **Ciclo de Vida Útil** | Corto (La actualización de modelos de lenguaje tiende a volver ineficaces los prompts estáticos). | Largo (Los principios epistemológicos de la interacción humano-máquina se mantienen constantes). |
+| **Ciclo de Vida Útil** | Corto (La actualización de los modelos de lenguaje tiende a volver obsoletos los prompts estáticos). | Largo (Los principios epistemológicos de la interacción humano-máquina se mantienen constantes). |
 
 ---
 
@@ -358,18 +145,16 @@ A continuación, se detalla un desglose analítico del valor pragmático de cada
 El documento **`Catálogo de Prompts - BIU - 2024.pdf`** fue el pilar fundamental e indispensable para el desarrollo de la aplicación web Sinergia IA en su estado actual.
 
 * **Justificación Técnica:**
-  Para un desarrollador, la información debe ser estructurada y sistemática para poder traducirse a código limpio. Este catálogo proporciona la estructura exacta de las 18 tarjetas de la biblioteca interactiva y clasifica las necesidades pedagógicas en categorías nítidas (Feedback, Inclusión, Evaluación).
-  Además, la lógica de variables fijas del catálogo permitió crear el mapeo de inputs de HTML del **Constructor en Vivo**. El código mapea exactamente las directrices del catálogo, por lo que sin este documento base, la automatización del portal carecería de un esquema de datos coherente y estructurado. El catálogo provee el **"contenido e insumo bruto"** del proyecto.
+  Para un desarrollador, la información debe ser estructurada y sistemática para poder traducirse a código. Este catálogo proporciona la estructura exacta de las 18 tarjetas de la biblioteca interactiva y clasifica las necesidades pedagógicas en categorías nítidas (Feedback, Inclusión, Evaluación).
+  Además, la lógica de variables fijas del catálogo permitió crear el mapeo de campos del **Constructor en Vivo**. El código interactivo replica de forma exacta las directrices de este archivo, proveyendo los datos necesarios para automatizar el generador de prompts del portal.
 
 #### B. Documento más útil para el desarrollo profesional y de software a futuro
 El documento **`Prompting en educación.pdf`** constituye la herramienta de mayor valor y utilidad para el desarrollo profesional a mediano y largo plazo tanto en el campo educativo como en el tecnológico.
 
 * **Justificación Epistemológica y Tecnológica:**
-  La ingeniería de prompts está evolucionando desde un enfoque de "recetas fijas" hacia un enfoque de **programación de agentes semánticos**. Los modelos de IA modernos (como GPT-4o, Claude 3.5 o Gemini 1.5) requieren cada vez menos de una plantilla rígida y se desempeñan mejor cuando se les explica el razonamiento subyacente de la tarea.
-  El documento **`Prompting en educación.pdf`** destaca por enseñar la arquitectura intelectual de la interacción con la IA:
+  La ingeniería de prompts está evolucionando desde un enfoque de fórmulas rígidas hacia una **programación de agentes semánticos**. Los modelos de IA modernos se desempeñan mejor cuando se les explica el razonamiento y andamiaje cognitivo subyacente del proceso de aprendizaje, en lugar de recibir plantillas vacías.
+  Este documento destaca por enseñar la arquitectura intelectual de la interacción:
   
-  1. **Composición de Flujos Complejos:** En lugar de enviar un prompt único de una sola interacción (Single-turn), enseña técnicas como la *Cadena de Pensamiento (Chain of Thought)*, permitiendo que la máquina razone lógicamente el proceso pedagógico antes de emitir la conclusión (vital para corregir ejercicios complejos o planificar temarios anuales).
-  2. **El Enfoque Colaborativo y Socrático:** Introduce metodologías donde la máquina no reemplaza al docente, sino que establece un diálogo interactivo, haciéndole preguntas clave para retroalimentar su labor o guiando al estudiante socráticamente sin darle las respuestas directamente.
-  3. **Portabilidad Tecnológica:** Al comprender cómo procesa y "piensa" el modelo de lenguaje (el fenómeno de la atención y la ventana de contexto), el profesional puede diseñar prompts genéricos altamente adaptables para cualquier modelo futuro. Un recetario estático de 2024 puede dejar de funcionar con la llegada de las IA basadas en agentes autónomos, pero las bases de andamiaje cognitivo descritas en el segundo documento perdurarán como principios de programación de lenguaje natural en los próximos años.
-  
-  Para el desarrollo de software educativo, este material es el mapa de ruta conceptual para diseñar la próxima generación de asistentes interactivos y tutores automatizados integrados en entornos virtuales de aprendizaje (LMS).
+  1. **Composición de Flujos Complejos:** Enseña técnicas avanzadas como *Chain-of-Thought (razonamiento en cadena)*, guiando al modelo de lenguaje para que argumente el proceso pedagógico paso a paso antes de entregar la respuesta.
+  2. **El Enfoque Colaborativo y Socrático:** Introduce metodologías donde la máquina interactúa de forma reflexiva haciendo preguntas clave al docente o guiando al alumno hacia el descubrimiento de sus propios errores de manera progresiva.
+  3. **Portabilidad y Vigencia:** Al comprender cómo procesa y asocia los datos un modelo de lenguaje (ventana de contexto, atención, tokens), el profesional adquiere la capacidad de formular instrucciones eficientes aplicables a cualquier modelo de IA futuro. Mientras las plantillas estáticas de 2024 envejecen con cada actualización de software, los principios de estructuración cognitiva se mantendrán vigentes en las próximas décadas.
